@@ -9,6 +9,7 @@ POSTGRES_USER="${POSTGRES_USER:-lemello}"
 POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-}"
 POSTGRES_DB="${POSTGRES_DB:-lemello}"
 POSTGRES_PORT="${POSTGRES_PORT:-5432}"
+POSTGRES_BIND_HOST="${POSTGRES_BIND_HOST:-127.0.0.1}"
 SHOW_PASSWORD="${SHOW_PASSWORD:-0}"
 GENERATED_PASSWORD=0
 
@@ -35,8 +36,9 @@ PY
         POSTGRES_PASSWORD="$(openssl rand -hex 12)"
         GENERATED_PASSWORD=1
     else
-        echo -e "${YELLOW}No password generator found. Set POSTGRES_PASSWORD in the environment.${NC}"
-        POSTGRES_PASSWORD="change_me"
+        echo -e "${YELLOW}No password generator found and POSTGRES_PASSWORD is not set.${NC}"
+        echo -e "${YELLOW}Please set POSTGRES_PASSWORD in the environment and re-run this script.${NC}"
+        exit 1
     fi
 fi
 
@@ -53,7 +55,7 @@ echo "  • CPU: 1 core (matches DO Basic Plan)"
 echo "  • Storage: container filesystem (ephemeral)"
 echo "  • Max Connections: 22 (matches DO Basic Plan)"
 echo "  • Image: pgvector/pgvector:pg16"
-echo "  • Host Port: ${POSTGRES_PORT}"
+echo "  • Host Bind: ${POSTGRES_BIND_HOST}:${POSTGRES_PORT}"
 if [ "${GENERATED_PASSWORD}" -eq 1 ]; then
     echo "  • Password: generated (set POSTGRES_PASSWORD to override)"
 fi
@@ -63,7 +65,7 @@ docker run --name "${CONTAINER_NAME}" \
   -e POSTGRES_PASSWORD="${POSTGRES_PASSWORD}" \
   -e POSTGRES_USER="${POSTGRES_USER}" \
   -e POSTGRES_DB="${POSTGRES_DB}" \
-  -p "${POSTGRES_PORT}:5432" \
+  -p "${POSTGRES_BIND_HOST}:${POSTGRES_PORT}:5432" \
   --memory="1g" \
   --cpus="1.0" \
   --shm-size=256m \
@@ -98,7 +100,7 @@ fi
 echo -e "${GREEN}✓ Container started successfully${NC}"
 echo ""
 echo -e "${BLUE}Connection details:${NC}"
-echo "  Host: localhost"
+echo "  Host: ${POSTGRES_BIND_HOST}"
 echo "  Port: ${POSTGRES_PORT}"
 echo "  Database: ${POSTGRES_DB}"
 echo "  User: ${POSTGRES_USER}"
