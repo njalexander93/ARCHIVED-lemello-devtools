@@ -14,6 +14,12 @@ Example:
 ./scripts/stop-postgres-test.sh
 ```
 
+Optional environment variables:
+
+- `POSTGRES_PASSWORD`: Set a custom password (otherwise a random one is generated).
+- `POSTGRES_PORT`: Set a custom host port (default `5432`).
+- `SHOW_PASSWORD=1`: Print the password in the output.
+
 ## Guidelines
 
 - Keep scripts small and focused.

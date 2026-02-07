@@ -20,6 +20,7 @@ else
     echo -e "${YELLOW}Container '${CONTAINER_NAME}' does not exist${NC}"
 fi
 
-# Optionally remove the volume (uncomment to also delete data)
-# docker volume rm lemello-postgres-test-data 2>/dev/null || true
-# echo -e "${GREEN}✓ Volume removed${NC}"
+# No named volume is created by default.
+# To remove data from a custom named volume, run:
+# docker volume rm <your_volume_name> 2>/dev/null || true
+# echo -e "${GREEN}✓ Volume removed (if it existed)${NC}"

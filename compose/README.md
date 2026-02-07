@@ -17,7 +17,9 @@ Notes:
 
 ## Conventions
 
-- `postgres.yml`: Postgres-only stack for local testing.
-- `redis.yml`: Redis-only stack.
+For each compose stack file you add, document it here with:
+- The filename (e.g. `local-stack.yml`)
+- A short description of what it runs
+- Example commands for how to start it (e.g. `docker compose -f compose/<file>.yml up`)
 
 Update this file with each new compose stack, including usage examples.
