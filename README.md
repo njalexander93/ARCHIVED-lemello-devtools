@@ -7,6 +7,12 @@ Local development tooling for Lemello. This repo centralizes Docker Compose stac
 - `compose/`: Docker Compose definitions for local stacks.
 - `scripts/`: Helper scripts for local development and verification.
 
+## Related Repositories
+
+- `lemello-app/backend`: FastAPI backend and AI services
+- `lemello-app/webapp`: Next.js Progressive Web App
+- `lemello-app/infra`: Infrastructure as Code (Terraform, DigitalOcean)
+
 ## Getting Started
 
 1. Install Docker and Docker Compose v2.
