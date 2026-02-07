@@ -38,6 +38,11 @@ echo -e "${GREEN}Step 2: Verifying extension is loaded...${NC}"
 docker exec -i "${CONTAINER_NAME}" psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" -t <<EOF
 SELECT extname, extversion FROM pg_extension WHERE extname = 'vector';
 EOF
+EXTENSION_COUNT=$(docker exec -i "${CONTAINER_NAME}" psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" -tAc "SELECT COUNT(*) FROM pg_extension WHERE extname = 'vector';" | tr -d '[:space:]')
+if [ "${EXTENSION_COUNT}" = "0" ] || [ -z "${EXTENSION_COUNT}" ]; then
+    echo -e "${RED}✗ Extension 'vector' is not installed in database '${POSTGRES_DB}'${NC}"
+    exit 1
+fi
 echo -e "${GREEN}✓ Extension verified${NC}"
 echo ""
 
@@ -100,6 +105,10 @@ echo ""
 
 echo -e "${GREEN}Step 7: Checking pgvector version...${NC}"
 PGVECTOR_VERSION=$(docker exec -i "${CONTAINER_NAME}" psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" -t -c "SELECT extversion FROM pg_extension WHERE extname = 'vector';" | xargs)
+if [[ -z "${PGVECTOR_VERSION}" ]]; then
+    echo -e "${RED}✗ Failed to determine pgvector version. Is the 'vector' extension installed and visible in database '${POSTGRES_DB}'?${NC}"
+    exit 1
+fi
 echo -e "${BLUE}pgvector version: ${PGVECTOR_VERSION}${NC}"
 echo ""
 

@@ -4,7 +4,6 @@ services:
   # -----------------------------------------------------------------------------
   postgres:
     image: pgvector/pgvector:pg16
-    container_name: lemello-postgres
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     environment:
@@ -28,7 +27,6 @@ services:
   # -----------------------------------------------------------------------------
   redis:
     image: redis:7-alpine
-    container_name: lemello-redis
     ports:
       - "${REDIS_PORT:-6379}:6379"
     environment:
@@ -63,7 +61,6 @@ services:
       dockerfile: Dockerfile
       target: development
     image: lemello-backend:${BACKEND_IMAGE_TAG:-latest}
-    container_name: lemello-backend
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     volumes:
@@ -96,16 +93,10 @@ services:
       dockerfile: Dockerfile
       target: development
     image: lemello-frontend:${FRONTEND_IMAGE_TAG:-latest}
-    container_name: lemello-frontend
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     volumes:
-      - ${WEBAPP_CONTEXT:-../webapp}/app:/app/app
-      - ${WEBAPP_CONTEXT:-../webapp}/public:/app/public
-      - ${WEBAPP_CONTEXT:-../webapp}/next.config.ts:/app/next.config.ts
-      - ${WEBAPP_CONTEXT:-../webapp}/tailwind.config.ts:/app/tailwind.config.ts
-      - ${WEBAPP_CONTEXT:-../webapp}/tsconfig.json:/app/tsconfig.json
-      - ${WEBAPP_CONTEXT:-../webapp}/postcss.config.mjs:/app/postcss.config.mjs
+      - ${WEBAPP_CONTEXT:-../webapp}:/app
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:${BACKEND_PORT:-8000}

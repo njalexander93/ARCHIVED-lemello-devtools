@@ -63,13 +63,12 @@ docker run --name "${CONTAINER_NAME}" \
   -e POSTGRES_PASSWORD="${POSTGRES_PASSWORD}" \
   -e POSTGRES_USER="${POSTGRES_USER}" \
   -e POSTGRES_DB="${POSTGRES_DB}" \
-  -e POSTGRES_INITDB_ARGS="-c max_connections=22" \
   -p "${POSTGRES_PORT}:5432" \
   --memory="1g" \
   --cpus="1.0" \
   --shm-size=256m \
   -d \
-  pgvector/pgvector:pg16
+  pgvector/pgvector:pg16 postgres -c max_connections=22
 
 echo ""
 echo -e "${GREEN}Waiting for PostgreSQL to be ready...${NC}"
