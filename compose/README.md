@@ -12,7 +12,7 @@ docker compose -f compose/local-stack.yml up --build
 ```
 
 Notes:
-- Default `BACKEND_CONTEXT` and `WEBAPP_CONTEXT` assume sibling repos (`../backend`, `../webapp`). Update `.env` if your paths differ.
+- Default `BACKEND_CONTEXT` and `WEBAPP_CONTEXT` assume sibling repos. These paths are resolved relative to `compose/local-stack.yml`, so the defaults are `../../backend` and `../../webapp`. Update `.env` if your paths differ.
 - Set `DATABASE_URL` and `REDIS_URL` in `.env` to match your local credentials.
 
 ## Conventions

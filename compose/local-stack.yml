@@ -57,14 +57,14 @@ services:
   # -----------------------------------------------------------------------------
   backend:
     build:
-      context: ${BACKEND_CONTEXT:-../backend}
+      context: ${BACKEND_CONTEXT:-../../backend}
       dockerfile: Dockerfile
       target: development
     image: lemello-backend:${BACKEND_IMAGE_TAG:-latest}
     ports:
-      - "${BACKEND_PORT:-8000}:8000"
+      - "${BACKEND_BIND_HOST:-127.0.0.1}:${BACKEND_PORT:-8000}:8000"
     volumes:
-      - ${BACKEND_CONTEXT:-../backend}/app:/app/app:ro
+      - ${BACKEND_CONTEXT:-../../backend}/app:/app/app:ro
     environment:
       - PYTHONUNBUFFERED=1
       - DATABASE_URL=${DATABASE_URL}
@@ -89,14 +89,14 @@ services:
   # -----------------------------------------------------------------------------
   frontend:
     build:
-      context: ${WEBAPP_CONTEXT:-../webapp}
+      context: ${WEBAPP_CONTEXT:-../../webapp}
       dockerfile: Dockerfile
       target: development
     image: lemello-frontend:${FRONTEND_IMAGE_TAG:-latest}
     ports:
-      - "${FRONTEND_PORT:-3000}:3000"
+      - "${FRONTEND_BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-3000}:3000"
     volumes:
-      - ${WEBAPP_CONTEXT:-../webapp}:/app
+      - ${WEBAPP_CONTEXT:-../../webapp}:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
