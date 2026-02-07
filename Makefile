@@ -27,18 +27,18 @@ env:
 up: env
 	docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) up --build
 
-down:
+down: env
 	docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) down
 
 restart: down up
 
-logs:
+logs: env
 	docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) logs -f
 
-ps:
+ps: env
 	docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) ps
 
-clean:
+clean: env
 	docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) down -v --remove-orphans
 
 rebuild: env
