@@ -16,8 +16,11 @@ Example:
 
 Optional environment variables:
 
+- `POSTGRES_USER`: Database user to create/use (default `lemello`). Respected by both `start-postgres-test.sh` and `verify-pgvector.sh`.
 - `POSTGRES_PASSWORD`: Set a custom password (otherwise a random one is generated).
+- `POSTGRES_DB`: Database name to create/use (default `lemello`). Respected by both `start-postgres-test.sh` and `verify-pgvector.sh`.
 - `POSTGRES_PORT`: Set a custom host port (default `5432`).
+- `POSTGRES_BIND_HOST`: Host/interface to bind the PostgreSQL port on (default `127.0.0.1`).
 - `SHOW_PASSWORD=1`: Print the password in the output.
 
 ## Guidelines

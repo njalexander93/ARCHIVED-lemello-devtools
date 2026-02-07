@@ -111,10 +111,14 @@ else
 fi
 echo ""
 echo -e "${BLUE}Connection string:${NC}"
+HOST_FOR_URL="${POSTGRES_BIND_HOST}"
+if [ "${HOST_FOR_URL}" = "0.0.0.0" ]; then
+    HOST_FOR_URL="localhost"
+fi
 if [ "${SHOW_PASSWORD}" = "1" ]; then
-    echo "  postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}"
+    echo "  postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${HOST_FOR_URL}:${POSTGRES_PORT}/${POSTGRES_DB}"
 else
-    echo "  postgresql://${POSTGRES_USER}:<redacted>@localhost:${POSTGRES_PORT}/${POSTGRES_DB}"
+    echo "  postgresql://${POSTGRES_USER}:<redacted>@${HOST_FOR_URL}:${POSTGRES_PORT}/${POSTGRES_DB}"
 fi
 echo ""
 echo -e "${GREEN}Next steps:${NC}"
