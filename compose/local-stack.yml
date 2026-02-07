@@ -1,0 +1,118 @@
+services:
+  # -----------------------------------------------------------------------------
+  # PostgreSQL 16 with pgvector
+  # -----------------------------------------------------------------------------
+  postgres:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "${POSTGRES_BIND_HOST:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lemello}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_strong_password}
+      POSTGRES_DB: ${POSTGRES_DB:-lemello}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lemello} -d ${POSTGRES_DB:-lemello}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - lemello-network
+
+  # -----------------------------------------------------------------------------
+  # Redis
+  # -----------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_BIND_HOST:-127.0.0.1}:${REDIS_PORT:-6379}:6379"
+    environment:
+      REDIS_PASSWORD: "${REDIS_PASSWORD:-}"
+    command:
+      - sh
+      - -c
+      - |
+        if [ -n "$REDIS_PASSWORD" ]; then
+          exec redis-server --appendonly yes --requirepass "$REDIS_PASSWORD";
+        else
+          exec redis-server --appendonly yes;
+        fi
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "if [ -n \"$REDIS_PASSWORD\" ]; then redis-cli -a \"$REDIS_PASSWORD\" ping | grep -q PONG; else redis-cli ping | grep -q PONG; fi"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - lemello-network
+
+  # -----------------------------------------------------------------------------
+  # Backend - FastAPI with hot reload
+  # -----------------------------------------------------------------------------
+  backend:
+    build:
+      context: ${BACKEND_CONTEXT:-../../backend}
+      dockerfile: Dockerfile
+      target: development
+    image: lemello-backend:${BACKEND_IMAGE_TAG:-latest}
+    ports:
+      - "${BACKEND_BIND_HOST:-127.0.0.1}:${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - ${BACKEND_CONTEXT:-../../backend}/app:/app/app:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - lemello-network
+
+  # -----------------------------------------------------------------------------
+  # Frontend - Next.js with Fast Refresh
+  # -----------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ${WEBAPP_CONTEXT:-../../webapp}
+      dockerfile: Dockerfile
+      target: development
+    image: lemello-frontend:${FRONTEND_IMAGE_TAG:-latest}
+    ports:
+      - "${FRONTEND_BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - ${WEBAPP_CONTEXT:-../../webapp}:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:${BACKEND_PORT:-8000}
+      - WATCHPACK_POLLING=true
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - lemello-network
+
+networks:
+  lemello-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
