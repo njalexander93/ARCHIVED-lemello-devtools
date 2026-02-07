@@ -13,8 +13,7 @@ NC='\033[0m' # No Color
 echo -e "${YELLOW}Stopping and removing container: ${CONTAINER_NAME}${NC}"
 
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
-    docker stop "${CONTAINER_NAME}" > /dev/null 2>&1
-    docker rm "${CONTAINER_NAME}" > /dev/null 2>&1
+    docker rm -f "${CONTAINER_NAME}" > /dev/null 2>&1
     echo -e "${GREEN}✓ Container removed${NC}"
 else
     echo -e "${YELLOW}Container '${CONTAINER_NAME}' does not exist${NC}"

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Verify pgvector installation for LMLO-9
-# Runs all Definition of Done steps
+# Verify pgvector installation
+# Runs all verification steps
 
 set -euo pipefail
 
 CONTAINER_NAME="lemello-postgres-test"
-POSTGRES_USER="lemello"
-POSTGRES_DB="lemello"
+POSTGRES_USER="${POSTGRES_USER:-lemello}"
+POSTGRES_DB="${POSTGRES_DB:-lemello}"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -16,7 +16,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}================================================${NC}"
-echo -e "${BLUE}  LMLO-9: pgvector Verification${NC}"
+echo -e "${BLUE}  pgvector Verification${NC}"
 echo -e "${BLUE}================================================${NC}"
 echo ""
 
@@ -62,7 +62,7 @@ INSERT INTO recipes_test (name, description, embedding)
 VALUES (
     'Test Recipe: Chocolate Chip Cookies',
     'A simple test recipe for pgvector verification',
-    array_fill(0.1, ARRAY[1536])::vector
+    array_fill(0.1::real, ARRAY[1536])::vector
 );
 
 -- Insert another with different values
@@ -70,7 +70,7 @@ INSERT INTO recipes_test (name, description, embedding)
 VALUES (
     'Test Recipe: Pasta Carbonara',
     'Another test recipe with vector data',
-    array_fill(0.2, ARRAY[1536])::vector
+    array_fill(0.2::real, ARRAY[1536])::vector
 );
 EOF
 echo -e "${GREEN}✓ Sample data inserted${NC}"
@@ -90,7 +90,7 @@ docker exec -i "${CONTAINER_NAME}" psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}
 SELECT
     id,
     name,
-    embedding <=> array_fill(0.15, ARRAY[1536])::vector AS distance
+    embedding <=> array_fill(0.15::real, ARRAY[1536])::vector AS distance
 FROM recipes_test
 ORDER BY distance
 LIMIT 2;
@@ -108,7 +108,7 @@ docker stats "${CONTAINER_NAME}" --no-stream --format "table {{.Container}}\t{{.
 echo ""
 
 echo -e "${BLUE}================================================${NC}"
-echo -e "${GREEN}✓ All LMLO-9 verification steps completed!${NC}"
+echo -e "${GREEN}✓ All verification steps completed!${NC}"
 echo -e "${BLUE}================================================${NC}"
 echo ""
 echo -e "${YELLOW}Next step:${NC}"

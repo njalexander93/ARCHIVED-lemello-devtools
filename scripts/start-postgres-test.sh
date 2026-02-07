@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Start PostgreSQL 16 with pgvector for LMLO-9 verification
+# Start PostgreSQL 16 with pgvector for verification
 # Resource limits match DigitalOcean Basic Plan ($15/month tier)
 
 set -euo pipefail
@@ -19,7 +19,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}================================================${NC}"
-echo -e "${BLUE}  LMLO-9: PostgreSQL 16 + pgvector Test Setup${NC}"
+echo -e "${BLUE}  PostgreSQL 16 + pgvector Test Setup${NC}"
 echo -e "${BLUE}================================================${NC}"
 echo ""
 
